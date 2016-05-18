@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, UnexpectedAlertPresentException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -55,12 +55,15 @@ def filter_star_by_user(user, fail_time=5):
         print u'查询星级失败, 正在重试'
         if fail_time >= 2:
             print u'请打开浏览器输入验证码解决封锁'
+            raw_input()
+            print u'解除封锁后请按任意键继续'
         time.sleep(3)
         fail_time = fail_time + 1
         if fail_time == 5:
             print u'失败次数过多, 跳过此用户'
-            print u'请打开 http://www.taoyitu.com/ 输入验证码,即可迅速解决问题'
             return False
+        return filter_star_by_user(user, fail_time)
+    except UnexpectedAlertPresentException:
         return filter_star_by_user(user, fail_time)
 
 

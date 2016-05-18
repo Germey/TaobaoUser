@@ -39,6 +39,7 @@ def find_comment_info(url, targets):
     config.NEXT_PAGE_COMMENTS = 1
     driver.get(url)
     title = ''
+    max_page = 100
     try:
         WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((By.ID, "J_TabBar"))
@@ -67,6 +68,7 @@ def find_comment_info(url, targets):
         print u'该宝贝名称是', title
         if not limit_comments_count(html):
             return None
+        max_page = int(get_comments_count(html))/20+1
         comments = parse_comments(html)
         for target in targets:
             target_user = target[0]
@@ -84,6 +86,8 @@ def find_comment_info(url, targets):
             a = page[length-1];
             a.click();
             '''
+            # next = driver.find_element_by_css_selector('.rate-paginator a:contains("下一页>>")')
+            # next.click()
             try:
                 driver.execute_script(js)
             except WebDriverException:
@@ -105,6 +109,9 @@ def find_comment_info(url, targets):
                 if comment:
                     success_users.add((target_user, title, url, comment))
             page_count += 1
+            if page_count > max_page:
+                print u'评论全部循环完毕'
+                config.NEXT_PAGE_COMMENTS = 0
             print u'已经匹配评论页数', page_count, u'次'
             time.sleep(1)
         except UnicodeDecodeError:
@@ -185,11 +192,14 @@ def filter_comments(comments, target_user=None, target_content=None):
                 print u'匹配到旺旺名', target_user
                 return comment
 
+def get_comments_count(html):
+    doc = pq(html)
+    comments_count = doc('.J_ReviewsCount').eq(0).text()
+    return comments_count
 
 def limit_comments_count(html):
     print u'正在解析该宝贝评论数目'
-    doc = pq(html)
-    comments_count = doc('.J_ReviewsCount').eq(0).text()
+    comments_count = get_comments_count(html)
     print u'该宝贝有', comments_count, u'条评论'
     if config.MAX_COMMENTS_LIMIT:
         if int(comments_count) > config.MAX_COMMENTS_COUNT:
