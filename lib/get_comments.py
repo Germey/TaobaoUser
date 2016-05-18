@@ -68,7 +68,7 @@ def find_comment_info(url, targets):
         print u'该宝贝名称是', title
         if not limit_comments_count(html):
             return None
-        max_page = int(get_comments_count(html))/20+1
+        max_page = int(get_comments_count(html)) / 20 + 1
         comments = parse_comments(html)
         for target in targets:
             target_user = target[0]
@@ -118,7 +118,7 @@ def find_comment_info(url, targets):
             print  u'匹配结果错误，跳过此匹配'
         except TimeoutException:
             print u'翻页失败'
-    if len(success_users)>0:
+    if len(success_users) > 0:
         print u'该宝贝匹配到了用户'
         try:
             for success_user in success_users:
@@ -166,6 +166,9 @@ def parse_comments(html):
         if filter_date:
             if date in dates or date == u'今天':
                 comments.append((user, date, comment_text, meta))
+            elif date.startswith(str(config.EXCEPT_YEAR)):
+                print u'时间已经到', config.EXCEPT_YEAR, u'年，停止匹配'
+                config.NEXT_PAGE_COMMENTS = 0
             else:
                 print u'出现日期不符合的评论，当前评论日期为', date
                 config.WRONG_DATE_COUNT += 1
@@ -187,16 +190,20 @@ def equal_text(a, b):
 def filter_comments(comments, target_user=None, target_content=None):
     for comment in comments:
         user = comment[0]
-        # comment_text = comment[2]
+        comment_text = comment[2].strip()
+        target_content = target_content.strip()
+        #print 'comment_text',comment_text
         if target_user and len(target_user) >= 5:
-            if equal_text(user[0], target_user[0]) and equal_text(user[4], target_user[-1]):
+            if equal_text(user[0], target_user[0]) and equal_text(user[4], target_user[-1]) and equal_text(comment_text, target_content):
                 print u'匹配到旺旺名', target_user
                 return comment
+
 
 def get_comments_count(html):
     doc = pq(html)
     comments_count = doc('.J_ReviewsCount').eq(0).text()
     return comments_count
+
 
 def limit_comments_count(html):
     print u'正在解析该宝贝评论数目'
@@ -207,6 +214,6 @@ def limit_comments_count(html):
             print u'评论数目过多，跳过解析'
             return False
         else:
-            print u'评论数目在', config.MAX_COMMENTS_COUNT,u'内，继续解析'
+            print u'评论数目在', config.MAX_COMMENTS_COUNT, u'内，继续解析'
             return True
     return True

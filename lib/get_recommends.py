@@ -32,7 +32,7 @@ def is_recommends_appear(driver, max_time=10):
 
 def scroll_bottom_recommends(driver, count):
     try:
-        js = "window.scrollTo(0,document.body.scrollHeight-" + str(count * 600) + ")"
+        js = "window.scrollTo(0,document.body.scrollHeight-" + str(count * 400) + ")"
         driver.execute_script(js)
     except WebDriverException:
         print u'下拉寻找橱窗宝贝时出现问题'

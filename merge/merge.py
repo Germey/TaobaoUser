@@ -52,7 +52,7 @@ def merge_file():
                     print u'匹配到用户', name
                     print u'电话号码', phone
                     if len(second) == 11:
-                        write_sheet.write(count - 1, 4, second)
+                        write_sheet.write(count - 1, 7, second)
                         wb.save(excel)
                     else:
                         print u'电话号码信息不完整, 没有导入'

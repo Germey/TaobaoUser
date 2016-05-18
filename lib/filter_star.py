@@ -29,7 +29,7 @@ def filter_star_by_user(user, fail_time=5):
         )
 
         html = driver.page_source
-        time.sleep(3)
+        time.sleep(2)
         print u'正在匹配星级'
         pattern = re.compile('<span id="buyer_ratecount.*?src="(.*?)gif', re.S)
         result = re.search(pattern, html)
@@ -56,8 +56,8 @@ def filter_star_by_user(user, fail_time=5):
         print u'查询星级失败, 正在重试'
         if fail_time >= 2:
             print u'请打开浏览器输入验证码解决封锁'
+            print u'解除封锁后请按任意键继续，如没有提示验证码，任意键继续即可'
             raw_input()
-            print u'解除封锁后请按任意键继续'
         time.sleep(3)
         fail_time = fail_time + 1
         if fail_time == 5:
@@ -65,7 +65,7 @@ def filter_star_by_user(user, fail_time=5):
             return False
         return filter_star_by_user(user, fail_time)
     except UnexpectedAlertPresentException:
-        return filter_star_by_user(user, fail_time)
+        return False
 
 
 def filter_star(user, max_star=config.MAX_STAR):

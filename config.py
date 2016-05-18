@@ -45,4 +45,6 @@ LOGIN_URL = 'https://world.taobao.com/login/login.php'
 
 PHONE_TXT = 'file/phone.txt'
 
+EXCEPT_YEAR = 2015
+
 DATE_COUNT_FILTER = False
