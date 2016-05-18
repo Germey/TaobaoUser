@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 import time
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 import xlrd
 import xlwt
 import config
@@ -10,8 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from pyquery import PyQuery as pq
 from lib.filter_star import filter_star_by_user
 from lib.get_days import get_days
+from xlutils.copy import copy
 import sys
-
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -119,7 +119,11 @@ def deal_recommends_infos(url):
             print 'comment_user', comment_user
             if len(comments_info) > 0 and not repeat_excel(comment_user) and filter_star(comment_user):
                 targets.append((comment_user, comment_content))
-        find_comment_info(url, targets)
+        if len(targets) > 0:
+            success_users = find_comment_info(url, targets)
+            print success_users
+            for success_user in set(success_users):
+                write_info(success_user)
 
 
 def is_comments_appear(driver, max_time=10):
@@ -183,7 +187,7 @@ def filter_comments(comments, target_user=None, target_content=None):
         if target_user and len(target_user) >= 5:
             if equal_text(user[0], target_user[0]) and equal_text(user[4], target_user[-1]):
                 print u'匹配到旺旺名', target_user
-                return True
+                return comment
 
 
 def limit_comments_count(html):
@@ -204,13 +208,62 @@ def complete_url(url):
     return url
 
 
+def write_to_excel(contents, file=config.OUT_FILE):
+    try:
+        rb = xlrd.open_workbook(file)
+        sheet = rb.sheets()[0]
+        row = sheet.nrows
+        wb = copy(rb)
+        sheet = wb.get_sheet(0)
+        count = 0
+        name = contents[0]
+        if not repeat_excel(name, file):
+            for content in contents:
+                sheet.write(row, count, content)
+                count = count + 1
+                wb.save(file)
+                print u'已成功写入到文件', file, u'第', row + 1, u'行'
+        else:
+            print u'内容已存在, 跳过写入文件', file
+
+    except IOError:
+        print u'未找到该文件', file
+        book = xlwt.Workbook(encoding='utf-8', style_compression=0)
+        book.add_sheet('sheet1', cell_overwrite_ok=True)
+        book.save(file)
+        print u'已成功创建该文件', file
+        write_to_excel(contents, file)
+
+
+def write_info(infos, file=config.OUT_FILE):
+    name = infos[0]
+    title = infos[1]
+    url = infos[2]
+    info = infos[3]
+    date = info[1]
+    comment = info[2]
+    meta = info[3]
+    contents = (name, date, comment, meta, title, url)
+    write_to_excel(contents, file)
+
+
+def get_title(html):
+    doc = pq(html)
+    title = doc('title').eq(0).text()
+    if title:
+        print title
+        return title
+
+
 def find_comment_info(url, targets):
     driver = config.DRIVER
     timeout = config.TIMEOUT
     success_users = set([])
     print '正在匹配评论', url
     url = complete_url(url)
+    config.NEXT_PAGE_COMMENTS = 1
     driver.get(url)
+    title = ''
     try:
         WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((By.ID, "J_TabBar"))
@@ -224,19 +277,27 @@ def find_comment_info(url, targets):
         comment_btn = document.querySelectorAll('#J_TabBar li a')[1]
         comment_btn.click()
         '''
-        driver.execute_script(js)
-        WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "col-author"))
-        )
+        try:
+            driver.execute_script(js)
+        except WebDriverException:
+                print u'点击获取评论按钮失败'
+        try:
+            WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "col-author"))
+            )
+        except TimeoutException:
+            print u'请求匹配评论页面超时'
         html = driver.page_source
+        title = get_title(html)
         if not limit_comments_count(html):
             return None
         comments = parse_comments(html)
         for target in targets:
             target_user = target[0]
             target_content = target[1]
-            if filter_comments(comments, target_user, target_content):
-                success_users.add(target_user)
+            comment = filter_comments(comments, target_user, target_content)
+            if comment:
+                success_users.add((target_user, title, url, comment))
     page_count = 1
     while config.NEXT_PAGE_COMMENTS:
         print u'正在分析后续评论'
@@ -247,18 +308,26 @@ def find_comment_info(url, targets):
             a = page[length-1];
             a.click();
             '''
-            driver.execute_script(js)
-            WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "col-author"))
-            )
+            try:
+                driver.execute_script(js)
+            except WebDriverException:
+                print u'评论数目少，无需翻页'
+                break
+            try:
+                WebDriverWait(driver, timeout).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "col-author"))
+                )
+            except TimeoutException:
+                print u'请求匹配评论页面超时'
             driver.implicitly_wait(config.NEXT_PAGE_WAIT)
             html = driver.page_source
             comments = parse_comments(html)
             for target in targets:
                 target_user = target[0]
                 target_content = target[1]
-                if filter_comments(comments, target_user, target_content):
-                    success_users.add(target_user)
+                comment = filter_comments(comments, target_user, target_content)
+                if comment:
+                    success_users.add((target_user, title, url, comment))
             page_count += 1
             print u'已经匹配评论页数', page_count, u'次'
             time.sleep(1)
