@@ -169,9 +169,10 @@ def parse_comments(html):
             else:
                 print u'出现日期不符合的评论，当前评论日期为', date
                 config.WRONG_DATE_COUNT += 1
-                if config.WRONG_DATE_COUNT > config.WRONG_DATE_MAX_COUNT:
-                    print u'当前不符合日期过多，不符合日期数是', config.WRONG_DATE_COUNT, u'，目前评论日期已到', date, u'旺旺号过于久远，直接跳过查询'
-                    config.NEXT_PAGE_COMMENTS = 0
+                if config.DATE_COUNT_FILTER:
+                    if config.WRONG_DATE_COUNT > config.WRONG_DATE_MAX_COUNT:
+                        print u'当前不符合日期过多，不符合日期数是', config.WRONG_DATE_COUNT, u'，目前评论日期已到', date, u'旺旺号过于久远，直接跳过查询'
+                        config.NEXT_PAGE_COMMENTS = 0
         else:
             comments.append((user, date, comment_text, meta))
     return comments

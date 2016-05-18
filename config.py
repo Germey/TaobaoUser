@@ -27,7 +27,7 @@ WRONG_DATE_MAX_COUNT = 50
 
 NEXT_PAGE_COMMENTS = 1
 
-FILTER_DATE = False
+FILTER_DATE = True
 
 MAX_COMMENTS_COUNT = 5000
 
@@ -44,3 +44,5 @@ NOW_URL_COUNT = 0
 LOGIN_URL = 'https://world.taobao.com/login/login.php'
 
 PHONE_TXT = 'file/phone.txt'
+
+DATE_COUNT_FILTER = False
