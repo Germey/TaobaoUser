@@ -32,17 +32,17 @@ def filter_star_by_user(user, fail_time=5):
         time.sleep(3)
         pattern = re.compile('<span id="buyer_ratecount.*?src="(.*?)gif', re.S)
         result = re.search(pattern, html)
-        print result.group(0)
+        print u'该用户星级标志是',result.group(1)
         src = result.group(0)
-        #driver.get('http://www.baidu.com')
+        # driver.get('http://www.baidu.com')
         for allow in allow_star:
-            if 'b_red_'+ str(allow) in src:
+            if 'b_red_' + str(allow) in src:
                 print u'该用户', user, u'星级符合要求'
                 return True
         print u'该用户', user, u'星级不符合要求'
         return False
     except TimeoutException:
-        print u'查询失败, 正在重试'
+        print u'查询失败, 正在重试查找', user, u'的星级'
         fail_time = fail_time + 1
         if fail_time == 3:
             print u'失败次数过多, 跳过此用户'
@@ -53,7 +53,7 @@ def filter_star_by_user(user, fail_time=5):
         return False
     except NoSuchElementException:
         print u'查询星级失败, 正在重试'
-        if fail_time >=2 :
+        if fail_time >= 2:
             new_driver()
         time.sleep(3)
         fail_time = fail_time + 1
@@ -62,3 +62,10 @@ def filter_star_by_user(user, fail_time=5):
             print u'请打开 http://www.taoyitu.com/ 输入验证码,即可迅速解决问题'
             return False
         return filter_star_by_user(user, fail_time)
+
+
+def filter_star(user, max_star=config.MAX_STAR):
+    need_filter_star = config.FILTER_STAR
+    if not need_filter_star:
+        return True
+    return filter_star_by_user(user)
