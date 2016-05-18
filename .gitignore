@@ -1,3 +1,4 @@
 /.idea
-/file
-!/file/.gitkeep
+/file/result.xls
+/file/count.txt
+/file/urls.txt
