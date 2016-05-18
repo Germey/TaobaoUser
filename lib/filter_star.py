@@ -30,6 +30,7 @@ def filter_star_by_user(user, fail_time=5):
 
         html = driver.page_source
         time.sleep(3)
+        print u'正在匹配星级'
         pattern = re.compile('<span id="buyer_ratecount.*?src="(.*?)gif', re.S)
         result = re.search(pattern, html)
         print u'该用户星级标志是',result.group(1)
