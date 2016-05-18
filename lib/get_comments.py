@@ -193,7 +193,9 @@ def limit_comments_count(html):
     print u'该宝贝有', comments_count, u'条评论'
     if config.MAX_COMMENTS_LIMIT:
         if int(comments_count) > config.MAX_COMMENTS_COUNT:
+            print u'评论数目过多，跳过解析'
             return False
         else:
+            print u'评论数目在', config.MAX_COMMENTS_COUNT,u'内，继续解析'
             return True
     return True

@@ -90,3 +90,25 @@ def write_info(infos, file=config.OUT_FILE):
             print u'信息不全，跳过写入'
     else:
         print u'写入文件时发生错误，跳过写入'
+
+
+def get_count():
+    try:
+        with open(config.COUNT_TXT, 'r') as f:
+            page = f.read()
+            if not page:
+                return 0
+            else:
+                return page
+    except Exception:
+        print '不存在计数文件，可从开头开始抓取'
+        return 0
+
+
+def write_count(count, file):
+    try:
+        with open(file, 'w') as f:
+            f.write(str(count))
+            f.close()
+    except TypeError:
+        print u'页码写入失败'

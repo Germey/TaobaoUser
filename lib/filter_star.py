@@ -54,7 +54,7 @@ def filter_star_by_user(user, fail_time=5):
     except NoSuchElementException:
         print u'查询星级失败, 正在重试'
         if fail_time >= 2:
-            new_driver()
+            print u'请打开浏览器输入验证码解决封锁'
         time.sleep(3)
         fail_time = fail_time + 1
         if fail_time == 5:
