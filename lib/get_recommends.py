@@ -21,18 +21,18 @@ sys.setdefaultencoding("utf-8")
 
 def is_recommends_appear(driver, max_time=10):
     count = 1
-    result = scroll_bottom_recommends(driver)
+    result = scroll_bottom_recommends(driver, count)
     while not result:
-        result = scroll_bottom_recommends(driver)
+        result = scroll_bottom_recommends(driver, count)
         count = count + 1
         if count == max_time:
             return False
     return True
 
 
-def scroll_bottom_recommends(driver):
+def scroll_bottom_recommends(driver, count):
     try:
-        js = "window.scrollTo(0,document.body.scrollHeight-200)"
+        js = "window.scrollTo(0,document.body.scrollHeight-" + str(count * 600) + ")"
         driver.execute_script(js)
     except WebDriverException:
         print u'下拉寻找橱窗宝贝时出现问题'
@@ -96,7 +96,7 @@ def deal_recommends_infos(url):
                 targets.append((comment_user, comment_content))
         if len(targets) > 0:
             success_users = find_comment_info(url, targets)
-            if success_users and len(success_users)>0:
+            if success_users and len(success_users) > 0:
                 print success_users
                 for success_user in set(success_users):
                     write_info(success_user)
