@@ -7,6 +7,7 @@ def get_urls():
     try:
         file = open(config.URLS_FILE, 'r')
         content = file.read()
+        print content
         pattern = re.compile(r'(http.*?)\s', re.S)
         urls = re.findall(pattern, content)
         return urls

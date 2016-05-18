@@ -45,7 +45,7 @@ def scroll_bottom_recommends(driver, count):
 
 
 def scrap_recommends_page(url):
-    print u'开始寻找下方橱窗推荐宝贝'
+    print u'开始寻找下方橱窗推荐宝贝',url
     driver = config.DRIVER
     timeout = config.TIMEOUT
     max_scroll_time = config.MAX_SCROLL_TIME

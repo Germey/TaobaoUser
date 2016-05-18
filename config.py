@@ -41,7 +41,7 @@ COUNT_TXT = 'file/count.txt'
 
 NOW_URL_COUNT = 0
 
-LOGIN_URL = 'https://world.taobao.com/login/login.php'
+LOGIN_URL = 'https://login.taobao.com/member/login.jhtml?spm=a21bo.50862.754894437.1.MVF6jc&f=top&redirectURL=https%3A%2F%2Fwww.taobao.com%2F'
 
 PHONE_TXT = 'file/phone.txt'
 

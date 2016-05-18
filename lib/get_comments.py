@@ -192,9 +192,12 @@ def filter_comments(comments, target_user=None, target_content=None):
         user = comment[0]
         comment_text = comment[2].strip()
         target_content = target_content.strip()
-        #print 'comment_text',comment_text
+        print 'comment_text',comment_text
+        print 'target_content', target_content
+
+        print 'user', user, 'target_user', target_user
         if target_user and len(target_user) >= 5:
-            if equal_text(user[0], target_user[0]) and equal_text(user[4], target_user[-1]) and equal_text(comment_text, target_content):
+            if equal_text(user[0], target_user[0]) and equal_text(user[4], target_user[-1]) and target_content in comment_text:
                 print u'匹配到旺旺名', target_user
                 return comment
 
