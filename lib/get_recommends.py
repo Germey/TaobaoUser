@@ -52,7 +52,7 @@ def scrap_recommends_page(url):
 
     driver.get(url)
     WebDriverWait(driver, timeout).until(
-        EC.presence_of_element_located((By.ID, "J_TabRecommends"))
+        EC.presence_of_element_located((By.ID, "J_TabBar"))
     )
     if is_recommends_appear(driver, max_scroll_time):
         print u'已经成功加载出下方橱窗推荐宝贝信息'
