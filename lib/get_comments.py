@@ -34,7 +34,7 @@ def find_comment_info(url, targets):
     driver = config.DRIVER
     timeout = config.TIMEOUT
     success_users = set([])
-    print '正在匹配评论', url
+    print u'正在匹配评论', url
     url = complete_url(url)
     config.NEXT_PAGE_COMMENTS = 1
     driver.get(url)
