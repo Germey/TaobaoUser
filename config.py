@@ -40,3 +40,7 @@ TOTAL_URLS_COUNT = 0
 COUNT_TXT = 'file/count.txt'
 
 NOW_URL_COUNT = 0
+
+LOGIN_URL = 'https://world.taobao.com/login/login.php'
+
+PHONE_TXT = 'file/phone.txt'

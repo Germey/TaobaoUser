@@ -27,12 +27,21 @@ def scrap(url):
 
 
 def from_input():
-    url = raw_input('请输入宝贝链接:')
+    print u'请输入宝贝链接'
+    url = raw_input()
+    driver = config.DRIVER
+    driver.get(config.LOGIN_URL)
+    print u'完成登录之后，请输入任意键，开始执行爬取'
+    raw_input()
     scrap(url)
     print u'采集结束'
 
 
 def from_file():
+    driver = config.DRIVER
+    driver.get(config.LOGIN_URL)
+    print u'完成登录之后，请输入任意键，开始执行爬取'
+    raw_input()
     urls = get_urls()
     print u'获取到如下链接列表'
     print urls
