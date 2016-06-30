@@ -1,5 +1,7 @@
 ## 淘宝非匿名用户抓取
+
 ### 项目简述
+
 本项目用来抓取淘宝非匿名用户以及评论，通过淘宝宝贝下方的推荐商品抓取评论内容。抓取到到结果保存到excel中。  
 由于淘宝采用大量JavaScript渲染以及Ajax，本项目采用Selenium＋Chrome来抓取相应内容，采用延时等待，模拟下拉点击等方法驱动浏览器渲染页面。  
 项目提供了如下功能：
@@ -7,8 +9,12 @@
 * 输入淘宝关键字采集淘宝链接并写入到文件
 * 从文件读取链接，执行评论采集
 * 将评论保存到Excel中，记录当前采集索引
-### 项目使用
+
+
+### 项目说明
+
 #### 安装
+
 安装Python
 
 ```
@@ -31,7 +37,9 @@ pip install pyquery selenium twisted requests xlrd xlwt xlutils
 ```
 安装Chrome浏览器，并下载Chromedriver将其到环境变量
 ```
+
 #### 使用
+
 采集链接
 
 ```
@@ -50,6 +58,7 @@ python from_input.py
 ```
 
 #### 可配置项
+
 项目中可配置项均位于 config.py 中
 
 * URLS_FILE  
