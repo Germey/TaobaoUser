@@ -114,6 +114,9 @@ python from_input.py
 匿名用户标志
 
 
+### 教程讲解
+
+[抓取淘宝非匿名旺旺](http://cuiqingcai.com/2852.html)
 
 
 
