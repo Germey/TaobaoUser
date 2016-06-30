@@ -1,22 +1,9 @@
 # -*- coding:utf-8 -*-
-import re
-import time
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
-import xlrd
-import xlwt
 import config
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from pyquery import PyQuery as pq
-from lib.filter_star import filter_star_by_user, filter_star
-from lib.get_comments import find_comment_info
-from lib.get_days import get_days
-from xlutils.copy import copy
 import sys
-from lib.get_recommends import get_recommends_infos, deal_recommends_infos
+from lib.get_recommends import deal_recommends_infos
 from lib.get_urls import get_urls
-from lib.write_to_excel import repeat_excel, write_info, get_count, write_count
+from lib.write_to_excel import get_count, write_count
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -43,8 +30,6 @@ def from_file():
     print u'完成登录之后，请输入任意键，开始执行爬取'
     raw_input()
     urls = get_urls()
-    print u'获取到如下链接列表'
-    print urls
     config.TOTAL_URLS_COUNT = len(urls)
     print u'共有', config.TOTAL_URLS_COUNT, u'个链接'
     count = int(get_count())

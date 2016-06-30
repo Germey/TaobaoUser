@@ -1,15 +1,7 @@
 # -*- coding:utf-8 -*-
-import time
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 import xlrd
 import xlwt
 import config
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from pyquery import PyQuery as pq
-from lib.filter_star import filter_star_by_user
-from lib.get_days import get_days
 from xlutils.copy import copy
 import sys
 
@@ -35,7 +27,7 @@ def repeat_excel(word, file=config.OUT_FILE):
             print u'用户名在excel中已经存在', word, u'跳过该用户'
             return True
         else:
-            print u'用户名在excel中不存在，继续进一步探寻用户信息'
+            print u'用户名在excel中不存在'
             return False
     except IOError, e:
         if 'No such file' in e.strerror:
@@ -74,20 +66,13 @@ def write_to_excel(contents, file=config.OUT_FILE):
 
 
 def write_info(infos, file=config.OUT_FILE):
-    if len(infos) >= 4:
+    if len(infos) >= 3:
         name = infos[0]
         print u'准备将', name, u'写入文件'
-        title = infos[1]
+        comment = infos[1]
         url = infos[2]
-        info = infos[3]
-        if len(info) >= 3:
-            date = info[1]
-            comment = info[2]
-            meta = info[3]
-            contents = (name, date, comment, meta, title, url)
-            write_to_excel(contents, file)
-        else:
-            print u'信息不全，跳过写入'
+        contents = (name, comment, url)
+        write_to_excel(contents, file)
     else:
         print u'写入文件时发生错误，跳过写入'
 

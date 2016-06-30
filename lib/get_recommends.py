@@ -1,17 +1,11 @@
 # -*- coding:utf-8 -*-
 import time
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
-import xlrd
-import xlwt
 import config
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pyquery import PyQuery as pq
-from lib.filter_star import filter_star_by_user, filter_star
-from lib.get_comments import find_comment_info
-from lib.get_days import get_days
-from xlutils.copy import copy
 import sys
 from lib.write_to_excel import repeat_excel, write_info
 
@@ -31,8 +25,10 @@ def is_recommends_appear(driver, max_time=10):
 
 
 def scroll_bottom_recommends(driver, count):
+    print u'正在尝试第', count, u'次下拉'
     try:
-        js = "window.scrollTo(0,document.body.scrollHeight-" + str(count * 200) + ")"
+        js = "window.scrollTo(0,document.body.scrollHeight-" + str(count * count* 200) + ")"
+        print js
         driver.execute_script(js)
     except WebDriverException:
         print u'下拉寻找橱窗宝贝时出现问题'
@@ -45,15 +41,17 @@ def scroll_bottom_recommends(driver, count):
 
 
 def scrap_recommends_page(url):
-    print u'开始寻找下方橱窗推荐宝贝',url
+    print u'开始寻找下方橱窗推荐宝贝', url
     driver = config.DRIVER
     timeout = config.TIMEOUT
     max_scroll_time = config.MAX_SCROLL_TIME
-
-    driver.get(url)
-    WebDriverWait(driver, timeout).until(
-        EC.presence_of_element_located((By.ID, "J_TabBar"))
-    )
+    try:
+        driver.get(url)
+        WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((By.ID, "J_TabBarBox"))
+        )
+    except TimeoutException:
+        return False
     if is_recommends_appear(driver, max_scroll_time):
         print u'已经成功加载出下方橱窗推荐宝贝信息'
         return driver.page_source
@@ -63,40 +61,40 @@ def scrap_recommends_page(url):
 
 def get_recommends_infos(url):
     info = []
+    if not url.startswith('http'):
+        url = 'https:' + url
     html = scrap_recommends_page(url)
-    doc = pq(html)
-    items = doc('#J_TjWaterfall > li')
-    print u'分析得到下方宝贝中的用户评论:'
-    for item in items.items():
-        url = item.find('a').attr('href')
-        comments_info = []
-        comments = item.find('p').items()
-        for comment in comments:
-            comment_user = comment.find('b').remove().text()
-            comment_content = comment.text()
-            anonymous_str = config.ANONYMOUS_STR
-            if not anonymous_str in comment_user:
-                comments_info.append((comment_content, comment_user))
-        info.append({'url': url, 'comments_info': comments_info})
-    print info
-    return info
+    if html:
+        doc = pq(html)
+        items = doc('#J_TjWaterfall > li')
+        print u'分析得到下方宝贝中的用户评论:'
+        for item in items.items():
+            url = item.find('a').attr('href')
+            if not url.startswith('http'):
+                url = 'https:' + url
+            comments_info = []
+            comments = item.find('p').items()
+            for comment in comments:
+                comment_user = comment.find('b').remove().text()
+                comment_content = comment.text()
+                anonymous_str = config.ANONYMOUS_STR
+                if not anonymous_str in comment_user:
+                    comments_info.append((comment_content, comment_user))
+            info.append({'url': url, 'comments_info': comments_info})
+        return info
+    else:
+        print u'抓取网页失败，跳过'
+        return []
 
 
 def deal_recommends_infos(url):
     infos = get_recommends_infos(url)
     for info in infos:
-        targets = []
         url = info.get('url')
         comments_info = info.get('comments_info')
         for comment_info in comments_info:
             comment_content = comment_info[0]
             comment_user = comment_info[1]
             print 'comment_user', comment_user
-            if len(comments_info) > 0 and not repeat_excel(comment_user) and filter_star(comment_user):
-                targets.append((comment_user, comment_content))
-        if len(targets) > 0:
-            success_users = find_comment_info(url, targets)
-            if success_users and len(success_users) > 0:
-                print success_users
-                for success_user in set(success_users):
-                    write_info(success_user)
+            if len(comments_info) > 0 and not repeat_excel(comment_user):
+                write_info((comment_user, comment_content, url))
