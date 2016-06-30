@@ -17,8 +17,8 @@ def is_recommends_appear(driver, max_time=10):
     count = 1
     result = scroll_bottom_recommends(driver, count)
     while not result:
-        result = scroll_bottom_recommends(driver, count)
         count = count + 1
+        result = scroll_bottom_recommends(driver, count)
         if count == max_time:
             return False
     return True
@@ -28,7 +28,6 @@ def scroll_bottom_recommends(driver, count):
     print u'正在尝试第', count, u'次下拉'
     try:
         js = "window.scrollTo(0,document.body.scrollHeight-" + str(count * count* 200) + ")"
-        print js
         driver.execute_script(js)
     except WebDriverException:
         print u'下拉寻找橱窗宝贝时出现问题'
