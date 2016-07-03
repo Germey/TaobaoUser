@@ -109,9 +109,9 @@ python from_input.py
 
 是否过滤相同店铺
 
-* ANONYMOUS_STR
+* TOTAL_URLS_COUNT
 
-匿名用户标志
+爬取链接总数
 
 
 ### 教程讲解

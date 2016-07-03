@@ -77,8 +77,7 @@ def get_recommends_infos(url):
                 comment_user = comment.find('b').remove().text()
                 comment_content = comment.text()
                 anonymous_str = config.ANONYMOUS_STR
-                if not anonymous_str in comment_user:
-                    comments_info.append((comment_content, comment_user))
+                comments_info.append((comment_content, comment_user))
             info.append({'url': url, 'comments_info': comments_info})
         return info
     else:
