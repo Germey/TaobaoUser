@@ -40,7 +40,7 @@ pip install pyquery selenium twisted requests xlrd xlwt xlutils
 
 #### 使用
 
-采集链接
+首先采集链接
 
 ```
 python get_links.py
